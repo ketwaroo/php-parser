@@ -1,0 +1,19 @@
+{
+    "name": "ketwaroo/php-token-reparse",
+    "version": "0.1.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yaasir Ketwaroo",
+            "email": "ketwaroo.yaasir@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ketwaroo\\PhpTokenReparse\\": "src/"
+        }
+    },
+    "require":{
+        "ketwaroo/debug-helper":"dev-master"
+    }
+}
