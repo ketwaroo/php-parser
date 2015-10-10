@@ -1,0 +1,46 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "487d43581cce22335b7ac4cb89883e5d",
+    "content-hash": "96b2d186f3a6c63555eb25141e203209",
+    "packages": [
+        {
+            "name": "ketwaroo/debug-helper",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ketwaroo/debug-helper",
+                "reference": "734ce1ca68436563196914e28b3bc71bafc25c2b"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "debug-helper.php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yaasir Ketwaroo",
+                    "email": "ketwaroo.yaasir@gmail.com"
+                }
+            ],
+            "time": "2015-10-07 03:44:30"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "ketwaroo/debug-helper": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
