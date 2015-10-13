@@ -32,6 +32,10 @@ class ClassBlock extends Block
         return $this->className;
     }
 
+    /**
+     * 
+     * @return string[]|int[]|Token[]
+     */
     public function getBlockType()
     {
         return 'T_CLASS';

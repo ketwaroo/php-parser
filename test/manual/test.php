@@ -1,9 +1,7 @@
 <?php
 
-/**
- *  @author Yaasir Ketwaroo <ketwaroo.yaasir@gmail.com>
- */
-require '../../vendor/autoload.php';
+define('MOO', __DIR__);
+require MOO . '/../../vendor/autoload.php';
 
 /**
  * doc
@@ -14,7 +12,7 @@ class A extends ArrayObject implements ArrayAccess
     public function functionName($param)
     {
         echo __LINE__;
-        echo __LINE__;
+        echo T_INCLUDE_ONCE, T_REQUIRE, T_;
     }
 
 }
@@ -32,6 +30,7 @@ class Z extends A
         if (false):
 
 // do something false
+            include_once 'MOO';
 
         else:
 
@@ -70,7 +69,10 @@ class Z extends A
 
 $src = new Ketwaroo\PhpParser\Source(file_get_contents(__FILE__));
 
-foreach ($src->getBlocks('T_CLASS') as $c)
+foreach($src->getBlocks() as $TYPE => $blocks)
 {
-    prnt($c->getClassName());
+    foreach ($blocks as $b)
+    {
+        prnt("$TYPE $b");
+    }
 }

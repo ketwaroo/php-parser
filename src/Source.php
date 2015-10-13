@@ -16,7 +16,8 @@ use Ketwaroo\PhpParser\Pattern\InterfaceConstants;
 class Source implements InterfaceConstants
 {
 
-    use Pattern\TraitTokenPosition;
+    use Pattern\TraitTokenPosition,
+        Pattern\TraitUtil;
 
     /**
      *
@@ -26,7 +27,7 @@ class Source implements InterfaceConstants
 
     protected $undefinedTokens = [];
 
-    protected $tokenHandlerCache = [];
+    protected static $tokenHandlerCache = [];
 
     /**
      *
@@ -102,19 +103,18 @@ class Source implements InterfaceConstants
         return new Token($this->getTokenName($tokenConstant), $tokenValue, $line, $pointer);
     }
 
-    public function parseBlock()
+    public function parseBlock($startPointer = null, $endPointer = null, Block $parentBlock = null)
     {
-        $startPointer = $this->getStartPointer();
-        $endPointer   = $this->getEndPointer();
+        $startPointer = null === $startPointer ? $this->getStartPointer() : $startPointer;
+        $endPointer   = null === $endPointer ? $this->getEndPointer() : $endPointer;
 
         for ($pointer = $startPointer; $pointer <= $endPointer; $pointer++)
         {
             if (null !== ($token = $this->getTokenAt($pointer)))
             {
 
-                if (null !== ($block = $this->makeBlock($token)))
+                if (null !== ($block = $this->makeBlock($token, $parentBlock)))
                 {
-
                     $this->addBlock($block);
 
                     $pointer = 1 + $block->getEndToken()->getPointer();
@@ -182,34 +182,66 @@ class Source implements InterfaceConstants
     public function makeBlock(Token $startToken, Block $parentBlock = null)
     {
         $tokenName = $startToken->getToken();
-        if (!isset($this->tokenHandlerCache[$tokenName]))
+        if (!isset(static::$tokenHandlerCache[$tokenName]))
         {
+            // attempt to register
+            static::registerBlockHandlers([$startToken]);
+        }
 
-            $class = __NAMESPACE__ . '\\Block\\'
-                    . $startToken->getStudlyName() . 'Block';
+        // try again
+        if (!empty(static::$tokenHandlerCache[$tokenName]))
+        {
+            $class = static::$tokenHandlerCache[$tokenName];
+
+            return new $class($this, $startToken, $parentBlock);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * 
+     * @param array $handlerMap 'tokenName' => 'StudlyName or \\Class\\Name',  or Token
+     */
+    public static function registerBlockHandlers(array $handlerMap)
+    {
+        foreach ($handlerMap as $tokenName => $className)
+        {
+            // don't do it twice
+            if (isset(static::$tokenHandlerCache[$tokenName]))
+            {
+                continue;
+            }
+
+            if ($className instanceof Token)
+            {
+                $tokenName = $className->getToken();
+                $class     = __NAMESPACE__ . '\\Block\\' . $className->getStudlyName() . 'Block';
+            }
+            elseif (is_string($className) && strpos('\\', $className) === false)
+            {
+                $class = __NAMESPACE__ . '\\Block\\' . $className . 'Block';
+            }
 
             if (!class_exists($class))
             {
-                $this->tokenHandlerCache[$tokenName] = false;
-                return null;
+                static::$tokenHandlerCache[$tokenName] = false;
+                continue;
             }
 
             $reflect = new \ReflectionClass($class);
 
             if ($reflect->implementsInterface(__NAMESPACE__ . '\\Pattern\\InterfaceBlockHandler'))
             {
-                $this->tokenHandlerCache[$tokenName] = $class;
+                static::$tokenHandlerCache[$tokenName] = $class;
             }
             else
             {
-                $this->tokenHandlerCache[$tokenName] = false;
+                static::$tokenHandlerCache[$tokenName] = false;
             }
         }
-
-        $class = $this->tokenHandlerCache[$tokenName];
-
-
-        return empty($class) ? null : (new $class($this, $startToken, $parentBlock));
     }
 
     public function getBlockType()

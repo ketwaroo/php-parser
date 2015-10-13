@@ -31,6 +31,16 @@ abstract class Block implements InterfaceBlockHandler, InterfaceConstants
                 ->setParentBlock($parentBlock);
 
         $this->parseBlock();
+
+        $firstOpener = $source->findNextMatchingFrom($this->getStartToken()->getPointer(), $this->getBlockOpener());
+        $lastCloser  = $source->findPreviousMatchingFrom($this->getEndToken()->getPointer(), $this->getBlockCloser());
+
+        $this->getSource()
+                ->parseBlock(
+                        ($firstOpener->getPointer() + 1)
+                        , ($lastCloser->getPointer() - 1)
+                        , $this
+        );
     }
 
     abstract public function parseBlock();

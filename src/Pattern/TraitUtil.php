@@ -12,13 +12,13 @@ namespace Ketwaroo\PhpParser\Pattern;
  */
 trait TraitUtil
 {
-    protected function utilUnixifyString($str)
+    protected static function utilUnixifyString($str)
     {
         return str_replace(["\r\n", "\r"], "\n", $str);
     }
 
-    protected function utilCountLines($str)
+    protected static function utilCountLines($str)
     {
-        return substr_count($this->utilUnixifyString($str), "\n");
+        return substr_count(static::utilUnixifyString($str), "\n");
     }
 }
